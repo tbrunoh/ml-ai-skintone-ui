@@ -20,7 +20,7 @@ COPY .env .env
 RUN npm run build
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 80
 
-# Start the Next.js application
-CMD ["npm", "run", "start"]
+# Start the Next.js application on port 80
+CMD ["npm", "run", "start", "--", "-p", "80"]

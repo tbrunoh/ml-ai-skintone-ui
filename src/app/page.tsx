@@ -97,6 +97,7 @@ export default function Home() {
       const uploadResponse = await fetch(apiEndpoint, {
         method: "POST",
         body: formData, // Send the FormData object
+        redirect: "manual",
       });
 
       if (!uploadResponse.ok) {

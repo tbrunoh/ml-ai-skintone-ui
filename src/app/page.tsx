@@ -78,7 +78,7 @@ export default function Home() {
     }
   };
 
-  const handleUploadImage = async () => {
+  const handleUploadAndAnalyze = async () => {
     if (!selectedImage) {
       setError("Please select or capture an image.");
       return;
@@ -86,17 +86,16 @@ export default function Home() {
 
     setIsLoading(true);
     setError(null);
-    setUploadedImageUrl(null);
+    setResponse(null);
 
     const formData = new FormData();
-    formData.append("image", selectedImage); // Correctly append the file
+    formData.append("image", selectedImage);
 
     try {
-      const apiEndpoint = process.env.UPLOAD_API_ENDPOINT || "";
-      console.log(`API ENDPOINT: ${apiEndpoint}`);
-      const uploadResponse = await fetch(apiEndpoint, {
+      const uploadApiEndpoint = process.env.UPLOAD_API_ENDPOINT || "";
+      const uploadResponse = await fetch(uploadApiEndpoint, {
         method: "POST",
-        body: formData, // Send the FormData object
+        body: formData,
         redirect: "manual",
       });
 
@@ -109,41 +108,24 @@ export default function Home() {
       const uploadData = await uploadResponse.json();
       const imageUrl = `${process.env.IMAGE_URL_PREFIX}/${uploadData.filename}`;
       setUploadedImageUrl(imageUrl);
-    } catch (err: any) {
-      setError(err.message || "An error occurred during image upload.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  const handleAnalyze = async () => {
-    if (!uploadedImageUrl) {
-      setError("Please upload an image first.");
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    setResponse(null);
-
-    try {
-      const apiEndpoint = process.env.API_ENDPOINT;
-      const response = await fetch(`${apiEndpoint}/skintone/infer`, {
+      const analyzeApiEndpoint = process.env.API_ENDPOINT;
+      const analyzeResponse = await fetch(`${analyzeApiEndpoint}/skintone/infer`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ url: uploadedImageUrl }),
+        body: JSON.stringify({ url: imageUrl }),
       });
 
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+      if (!analyzeResponse.ok) {
+        throw new Error(`API request failed with status ${analyzeResponse.status}`);
       }
 
-      const data: SkinToneResponse = await response.json();
+      const data: SkinToneResponse = await analyzeResponse.json();
       setResponse(data);
     } catch (err: any) {
-      setError(err.message || "An error occurred during the API request.");
+      setError(err.message || "An error occurred during the process.");
     } finally {
       setIsLoading(false);
     }
@@ -191,18 +173,10 @@ export default function Home() {
 
         <button
           className={styles.primary}
-          onClick={handleUploadImage}
+          onClick={handleUploadAndAnalyze}
           disabled={isLoading || !selectedImage}
         >
-          {isLoading ? "Uploading..." : "Upload Image"}
-        </button>
-
-        <button
-          className={styles.primary}
-          onClick={handleAnalyze}
-          disabled={isLoading || !uploadedImageUrl}
-        >
-          {isLoading ? "Analyzing..." : "Analyze"}
+          {isLoading ? "Processing..." : "Upload & Analyze"}
         </button>
 
         {error && <div className={styles.error}>{error}</div>}
@@ -221,10 +195,10 @@ export default function Home() {
             </p>
             <div className={styles.orbImage}>
               <img
-              src={response.orb}
-              alt="Orb Image"
-              width={300}
-              height={300}
+                src={response.orb}
+                alt="Orb Image"
+                width={300}
+                height={300}
               />
             </div>
           </div>

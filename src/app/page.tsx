@@ -220,11 +220,11 @@ export default function Home() {
               <strong>Orb:</strong>
             </p>
             <div className={styles.orbImage}>
-              <Image
-                src={response.orb}
-                alt="Orb Image"
-                width={300}
-                height={300}
+              <img
+              src={response.orb}
+              alt="Orb Image"
+              width={300}
+              height={300}
               />
             </div>
           </div>

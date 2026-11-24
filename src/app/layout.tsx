@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Melanin Luxe Skin Tone",
-  description: "Melanin Luxe Skin Tone Test UI",
+  title: "Inclusive Skin AI: Skin Tone Analysis",
+  description: "Skin tone analysis on the Monk Skin Tone scale",
 };
 
 export default function RootLayout({
